@@ -1,6 +1,6 @@
 {
   "name": "abstract-services-sdk",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "This package helps to build SDK for universe services",
   "main": "index.js",
   "scripts": {
@@ -35,6 +35,7 @@
     "eslint-config-vazco": "^2.1.0",
     "eslint-plugin-babel": "^3.2.0",
     "eslint-plugin-import": "^1.16.0",
+    "eslint-plugin-react": "^6.7.1",
     "eslint-plugin-vazco": "^1.0.0",
     "mocha": "2.x.x",
     "nodemon": "1.7.x",

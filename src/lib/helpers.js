@@ -12,7 +12,7 @@ export function randomString (stringLength = 5) {
 
 export function shuffleProps (obj) {
     const result = {};
-    const keysOrder = Object.keys(obj).sort((a, b) => Math.random() - 0.5);
+    const keysOrder = Object.keys(obj).sort(() => Math.random() - 0.5);
     keysOrder.forEach(key => result[key] = obj[key]);
     return result;
 }
