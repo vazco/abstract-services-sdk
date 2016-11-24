@@ -5,10 +5,8 @@ This package provides:
 - AbstractService - an abstract representation of client service. You can use connection methods on browser/server environment. 
 
 ### AbstractServicesSDK
-
-### AbstractServicesSDK
 This is an abstract class of services manager, mostly used to getting instance of some service and to generate webTokens for the clients.
-**Web tokens should be generated on server side \(to protect a public key against unauthorized using\)**
+Web tokens should be generated on server side \(to protect a public key against unauthorized using\)
 
 #### Methods
 
