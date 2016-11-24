@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "prepublish": ". ./scripts/prepublish.sh",
+    "watch": ". ./scripts/watch.sh",
     "lint": "eslint ./src",
     "lintfix": "eslint ./src --fix",
     "testonly": "mocha $npm_package_options_mocha",
