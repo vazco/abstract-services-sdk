@@ -16,7 +16,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz';
 
 function randomString() {
-    var stringLength = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 4;
+    var stringLength = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 5;
 
     var randomString = '';
     for (var i = 0; i < stringLength; i++) {

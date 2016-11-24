@@ -11,7 +11,7 @@ export class AbstractServicesSDK {
         this._services = {};
     }
 
-    generateWebToken (userId = '', sessionId = '', ttl = 86400) {
+    generateWebToken ({userId = '', groupId = '', sessionId = '', hash = '', ttl = 86400} = {}) {
         if (!this._publicKeyString) {
             throw new Error('Generation of tokens is not available for current instance,' +
                 ' probably you should generate token on server side or publicKeyString was not provided');
@@ -31,6 +31,14 @@ export class AbstractServicesSDK {
 
         if (sessionId) {
             credentials.s = sessionId;
+        }
+
+        if (hash) {
+            credentials.h = hash;
+        }
+
+        if (groupId) {
+            credentials.g = groupId;
         }
 
         const result = cryptico.encrypt(JSON.stringify(shuffleProps(credentials)), this._publicKeyString);

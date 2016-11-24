@@ -11,11 +11,44 @@ export class AbstractService extends Axios {
     }
 
     /**
-     * sets token for authentication, token you can generate from SDK.generateWebToken
-     * @param {string} token
+     * Sets token for authentication, token you can generate from SDK.generateWebToken
+     * @param {string|function} token or token getter, which returns promise.
+     * @returns {undefined}
      */
     setToken (token) {
-        this.defaults.headers['x-app-token'] = token;
+        if (typeof token === 'function') {
+            this._tokenGetter = token;
+            return;
+        }
+        this._token = token;
+        // this.defaults.headers['x-app-token'] = token;
+    }
+
+    async _getToken (config) {
+        if (this._tokenGetter) {
+            const token = this._tokenGetter(config);
+            if (token) {
+                if (token.then) {
+                    return await token;
+                }
+                return token;
+            }
+        }
+        return this._token;
+    }
+
+    request (config) {
+        config = config || {};
+        const adapter =  config.adapter || this.defaults.adapter;
+        config.adapter = async conf => {
+            const token = await this._getToken(conf);
+            conf.headers = Object.assign(conf.headers, {
+                'x-app-id': this.getAppId(),
+                'x-app-token': token
+            });
+            return await adapter(conf);
+        };
+        return super.request(config);
     }
 
     /**

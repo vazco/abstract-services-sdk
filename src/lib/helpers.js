@@ -1,6 +1,6 @@
 const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz';
 
-export function randomString (stringLength = 4) {
+export function randomString (stringLength = 5) {
     let randomString = '';
     for (let i=0; i < stringLength; i++) {
         const rnum = Math.floor(Math.random() * chars.length);

@@ -1,11 +1,20 @@
 # Abstract Services SDK
-
-WORKING PROGRESS
-
-## Basic Usage
+This is abstract frame that helps with build SDK for your Universe Services Server.
+This package provides:
+- AbstractServicesSDK, which is a simple services manager with option to generate web tokens.
+- AbstractService - an abstract representation of client service. You can use connection methods on browser/server environment. 
 
 ### AbstractServicesSDK
 
+### AbstractServicesSDK
+This is an abstract class of services manager, mostly used to getting instance of some service and to generate webTokens for the clients.
+**Web tokens should be generated on server side \(to protect a public key against unauthorized using\)**
+
+#### Methods
+
+##### AbstractServicesSDK#constructor({url, appId, publicKeyString = '', ServiceClasses = {}}) ServiceClasses['serviceName'] = serviceClass
+##### AbstractServicesSDK#generateWebToken({userId = '', groupId = '', sessionId = '', hash = '', ttl = 86400} = {})
+##### AbstractServicesSDK#getService(name)
 
 ### AbstractService
 
@@ -14,6 +23,7 @@ WORKING PROGRESS
 ##### AbstractService#getAppId() AppID for service
 ##### AbstractService#getBaseURL() Url to the host of service
 ##### AbstractService#setToken(token) sets token `x-app-token` used by default universe auth for services
+Parameter token can be type of `string` or `function`, which returns token directly as a `string` or promise with token.
 ##### AbstractService#request(config=)
 ##### AbstractService#get(config=)
 ##### AbstractService#delete(config=)
@@ -37,7 +47,7 @@ These are the available config options for making requests.
 
   // `method` is the request method to be used when making the request
   method: 'get', // default
-
+  
   // `transformRequest` allows changes to the request data before it is sent to the server
   // This is only applicable for request methods 'PUT', 'POST', and 'PATCH'
   // The last function in the array must return a string, an ArrayBuffer, or a Stream

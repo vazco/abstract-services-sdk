@@ -49,9 +49,17 @@ var AbstractServicesSDK = exports.AbstractServicesSDK = function () {
     (0, _createClass3.default)(AbstractServicesSDK, [{
         key: 'generateWebToken',
         value: function generateWebToken() {
-            var userId = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-            var sessionId = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-            var ttl = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 86400;
+            var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+                _ref2$userId = _ref2.userId,
+                userId = _ref2$userId === undefined ? '' : _ref2$userId,
+                _ref2$groupId = _ref2.groupId,
+                groupId = _ref2$groupId === undefined ? '' : _ref2$groupId,
+                _ref2$sessionId = _ref2.sessionId,
+                sessionId = _ref2$sessionId === undefined ? '' : _ref2$sessionId,
+                _ref2$hash = _ref2.hash,
+                hash = _ref2$hash === undefined ? '' : _ref2$hash,
+                _ref2$ttl = _ref2.ttl,
+                ttl = _ref2$ttl === undefined ? 86400 : _ref2$ttl;
 
             if (!this._publicKeyString) {
                 throw new Error('Generation of tokens is not available for current instance,' + ' probably you should generate token on server side or publicKeyString was not provided');
@@ -71,6 +79,14 @@ var AbstractServicesSDK = exports.AbstractServicesSDK = function () {
 
             if (sessionId) {
                 credentials.s = sessionId;
+            }
+
+            if (hash) {
+                credentials.h = hash;
+            }
+
+            if (groupId) {
+                credentials.g = groupId;
             }
 
             var result = _crypticoJs2.default.encrypt((0, _stringify2.default)((0, _helpers.shuffleProps)(credentials)), this._publicKeyString);

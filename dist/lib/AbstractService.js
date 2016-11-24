@@ -9,6 +9,14 @@ var _assign = require('babel-runtime/core-js/object/assign');
 
 var _assign2 = _interopRequireDefault(_assign);
 
+var _regenerator = require('babel-runtime/regenerator');
+
+var _regenerator2 = _interopRequireDefault(_regenerator);
+
+var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
+
+var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
+
 var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
 
 var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
@@ -24,6 +32,10 @@ var _createClass3 = _interopRequireDefault(_createClass2);
 var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
 
 var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _get2 = require('babel-runtime/helpers/get');
+
+var _get3 = _interopRequireDefault(_get2);
 
 var _inherits2 = require('babel-runtime/helpers/inherits');
 
@@ -54,15 +66,117 @@ var AbstractService = exports.AbstractService = function (_Axios) {
     }
 
     /**
-     * sets token for authentication, token you can generate from SDK.generateWebToken
-     * @param {string} token
+     * Sets token for authentication, token you can generate from SDK.generateWebToken
+     * @param {string|function} token or token getter, which returns promise.
+     * @returns {undefined}
      */
 
 
     (0, _createClass3.default)(AbstractService, [{
         key: 'setToken',
         value: function setToken(token) {
-            this.defaults.headers['x-app-token'] = token;
+            if (typeof token === 'function') {
+                this._tokenGetter = token;
+                return;
+            }
+            this._token = token;
+            // this.defaults.headers['x-app-token'] = token;
+        }
+    }, {
+        key: '_getToken',
+        value: function () {
+            var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(config) {
+                var token;
+                return _regenerator2.default.wrap(function _callee$(_context) {
+                    while (1) {
+                        switch (_context.prev = _context.next) {
+                            case 0:
+                                if (!this._tokenGetter) {
+                                    _context.next = 8;
+                                    break;
+                                }
+
+                                token = this._tokenGetter(config);
+
+                                if (!token) {
+                                    _context.next = 8;
+                                    break;
+                                }
+
+                                if (!token.then) {
+                                    _context.next = 7;
+                                    break;
+                                }
+
+                                _context.next = 6;
+                                return token;
+
+                            case 6:
+                                return _context.abrupt('return', _context.sent);
+
+                            case 7:
+                                return _context.abrupt('return', token);
+
+                            case 8:
+                                return _context.abrupt('return', this._token);
+
+                            case 9:
+                            case 'end':
+                                return _context.stop();
+                        }
+                    }
+                }, _callee, this);
+            }));
+
+            function _getToken(_x) {
+                return _ref2.apply(this, arguments);
+            }
+
+            return _getToken;
+        }()
+    }, {
+        key: 'request',
+        value: function request(config) {
+            var _this2 = this;
+
+            config = config || {};
+            var adapter = config.adapter || this.defaults.adapter;
+            config.adapter = function () {
+                var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(conf) {
+                    var token;
+                    return _regenerator2.default.wrap(function _callee2$(_context2) {
+                        while (1) {
+                            switch (_context2.prev = _context2.next) {
+                                case 0:
+                                    _context2.next = 2;
+                                    return _this2._getToken(conf);
+
+                                case 2:
+                                    token = _context2.sent;
+
+                                    conf.headers = (0, _assign2.default)(conf.headers, {
+                                        'x-app-id': _this2.getAppId(),
+                                        'x-app-token': token
+                                    });
+                                    _context2.next = 6;
+                                    return adapter(conf);
+
+                                case 6:
+                                    return _context2.abrupt('return', _context2.sent);
+
+                                case 7:
+                                case 'end':
+                                    return _context2.stop();
+                            }
+                        }
+                    }, _callee2, _this2);
+                }));
+
+                return function (_x2) {
+                    return _ref3.apply(this, arguments);
+                };
+            }();
+            return (0, _get3.default)(AbstractService.prototype.__proto__ || (0, _getPrototypeOf2.default)(AbstractService.prototype), 'request', this).call(this, config);
         }
 
         /**
