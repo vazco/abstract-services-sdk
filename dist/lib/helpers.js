@@ -28,7 +28,7 @@ function randomString() {
 
 function shuffleProps(obj) {
     var result = {};
-    var keysOrder = (0, _keys2.default)(obj).sort(function (a, b) {
+    var keysOrder = (0, _keys2.default)(obj).sort(function () {
         return Math.random() - 0.5;
     });
     keysOrder.forEach(function (key) {

@@ -69,10 +69,10 @@ describe('AbstractService', () => {
     const token1 = testSDK.generateWebToken(DEFAULT_TOKEN_PARAMS);
     const token2 = testSDK.generateWebToken(DEFAULT_TOKEN_PARAMS);
 
-    it('getting a service', () => {
-        const testService = testSDK.getService('testService');
+    it('getting a service', async () => {
+        const testService = await testSDK.getService('testService');
         testService.should.be.instanceOf(TestService);
-        expect(testService).to.be.equal(testSDK.getService('testService'));
+        expect(testService).to.be.equal(await testSDK.getService('testService'));
         [
             'getServiceName',
             'getAppId',
@@ -94,7 +94,7 @@ describe('AbstractService', () => {
     });
 
     it('auth headers', async () => {
-        const testService = testSDK.getService('testService');
+        const testService = await testSDK.getService('testService');
         testService.setToken(token2);
         testService.setTestAdapter(cfg => {
             cfg.headers.should.be.an('object');
@@ -108,7 +108,7 @@ describe('AbstractService', () => {
     });
 
     it('auth headers - getter with promise', async () => {
-        const testService = testSDK.getService('testService');
+        const testService = await testSDK.getService('testService');
         testService.setToken(() => Promise.resolve(token1));
         testService.setTestAdapter(cfg => {
             expect(cfg.headers['x-app-token']).to.be.equal(token1);
