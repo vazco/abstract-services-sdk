@@ -12,7 +12,7 @@ Web tokens should be generated on server side \(to protect a public key against 
 
 ##### AbstractServicesSDK#constructor({url, appId, publicKeyString = '', ServiceClasses = {}}) ServiceClasses['serviceName'] = serviceClass
 ##### AbstractServicesSDK#generateWebToken({userId = '', groupId = '', sessionId = '', hash = '', ttl = 86400} = {}) *\(expected to be used on server side\)*
-##### AbstractServicesSDK#getService(name)
+##### AbstractServicesSDK#getService(name) returns promise with service
 ##### AbstractServicesSDK#setToken(token, serviceName='default') sets token `x-app-token` used by default universe auth for services
 Parameter token can be type of `string` or `function`, which returns token directly as a `string` or promise with token.
 serviceName - can set token/tokenGetter to proper service or to all as a default.

@@ -1,4 +1,5 @@
 import {Axios} from 'axios';
+import defaults from 'axios/lib/defaults';
 
 export class AbstractService extends Axios {
     constructor ({appId, baseURL, serviceName}) {
@@ -39,7 +40,7 @@ export class AbstractService extends Axios {
 
     request (config) {
         config = config || {};
-        const adapter =  config.adapter || this.defaults.adapter;
+        const adapter =  config.adapter || this.defaults.adapter || defaults.adapter;
         config.adapter = async conf => {
             const token = await this._getToken(conf);
             conf.headers = Object.assign(conf.headers, {

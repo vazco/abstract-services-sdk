@@ -43,6 +43,10 @@ var _inherits3 = _interopRequireDefault(_inherits2);
 
 var _axios = require('axios');
 
+var _defaults = require('axios/lib/defaults');
+
+var _defaults2 = _interopRequireDefault(_defaults);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var AbstractService = exports.AbstractService = function (_Axios) {
@@ -140,7 +144,7 @@ var AbstractService = exports.AbstractService = function (_Axios) {
             var _this2 = this;
 
             config = config || {};
-            var adapter = config.adapter || this.defaults.adapter;
+            var adapter = config.adapter || this.defaults.adapter || _defaults2.default.adapter;
             config.adapter = function () {
                 var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(conf) {
                     var token;
