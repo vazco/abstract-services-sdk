@@ -47,6 +47,10 @@ var _defaults = require('axios/lib/defaults');
 
 var _defaults2 = _interopRequireDefault(_defaults);
 
+var _ejson = require('ejson');
+
+var _ejson2 = _interopRequireDefault(_ejson);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var AbstractService = exports.AbstractService = function (_Axios) {
@@ -144,6 +148,7 @@ var AbstractService = exports.AbstractService = function (_Axios) {
             var _this2 = this;
 
             config = config || {};
+            var transformResponse = config.transformResponse || this.defaults.transformResponse || _defaults2.default.adapter;
             var adapter = config.adapter || this.defaults.adapter || _defaults2.default.adapter;
             config.adapter = function () {
                 var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(conf) {
@@ -305,5 +310,15 @@ var AbstractService = exports.AbstractService = function (_Axios) {
     }]);
     return AbstractService;
 }(_axios.Axios);
+
+_defaults2.default.transformResponse = [function transformResponse(data) {
+    /*eslint no-param-reassign:0*/
+    if (typeof data === 'string') {
+        try {
+            data = _ejson2.default.parse(data);
+        } catch (e) {/* Ignore */}
+    }
+    return data;
+}];
 
 exports.default = AbstractService;

@@ -1,5 +1,6 @@
 import {Axios} from 'axios';
 import defaults from 'axios/lib/defaults';
+import EJSON from 'ejson';
 
 export class AbstractService extends Axios {
     constructor ({appId, baseURL, serviceName}) {
@@ -133,6 +134,16 @@ export class AbstractService extends Axios {
         return this.request(Object.assign(config, {method: 'patch', data}));
     }
 }
-
+/*eslint-disable no-unused-vars*/
+defaults.transformResponse = [function transformResponse (data) {
+    /*eslint no-param-reassign:0*/
+    if (typeof data === 'string') {
+        try {
+            data = EJSON.parse(data);
+        } catch (e) { /* Ignore */ }
+    }
+    return data;
+}];
+/*eslint-enable no-unused-vars*/
 
 export default AbstractService;
