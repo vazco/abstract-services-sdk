@@ -367,15 +367,13 @@ var AbstractService = exports.AbstractService = function (_Axios) {
                     while (1) {
                         switch (_context4.prev = _context4.next) {
                             case 0:
-                                console.log('sendStream', config);
-                                _context4.next = 3;
+                                _context4.next = 2;
                                 return this._getToken(config);
 
-                            case 3:
+                            case 2:
                                 token = _context4.sent;
                                 return _context4.abrupt('return', new _promise2.default(function (resolve, reject) {
                                     var client = new BinaryClient(_this3._socketURL);
-                                    console.log('client', _this3._socketURL, client);
                                     var isResolved = false;
                                     var done = function done() {
                                         if (!isResolved) {
@@ -427,7 +425,7 @@ var AbstractService = exports.AbstractService = function (_Axios) {
                                     });
                                 }));
 
-                            case 5:
+                            case 4:
                             case 'end':
                                 return _context4.stop();
                         }
