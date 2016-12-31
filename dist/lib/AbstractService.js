@@ -5,6 +5,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.AbstractService = undefined;
 
+var _promise = require('babel-runtime/core-js/promise');
+
+var _promise2 = _interopRequireDefault(_promise);
+
 var _assign = require('babel-runtime/core-js/object/assign');
 
 var _assign2 = _interopRequireDefault(_assign);
@@ -51,6 +55,8 @@ var _ejson = require('ejson');
 
 var _ejson2 = _interopRequireDefault(_ejson);
 
+var _binaryjsClient = require('binaryjs-client');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var AbstractService = exports.AbstractService = function (_Axios) {
@@ -70,6 +76,7 @@ var AbstractService = exports.AbstractService = function (_Axios) {
 
         _this._appId = appId;
         _this._serviceName = serviceName;
+        _this._socketURL = baseURL.replace(/^http/, 'ws').replace(/\/+$/, '') + '/socket';
         return _this;
     }
 
@@ -148,7 +155,6 @@ var AbstractService = exports.AbstractService = function (_Axios) {
             var _this2 = this;
 
             config = config || {};
-            var transformResponse = config.transformResponse || this.defaults.transformResponse || _defaults2.default.adapter;
             var adapter = config.adapter || this.defaults.adapter || _defaults2.default.adapter;
             config.adapter = function () {
                 var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(conf) {
@@ -307,9 +313,95 @@ var AbstractService = exports.AbstractService = function (_Axios) {
 
             return this.request((0, _assign2.default)(config, { method: 'patch', data: data }));
         }
+    }, {
+        key: 'sendStream',
+        value: function () {
+            var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3() {
+                var _this3 = this;
+
+                var onStream = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function () {};
+                var config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+                var token;
+                return _regenerator2.default.wrap(function _callee3$(_context3) {
+                    while (1) {
+                        switch (_context3.prev = _context3.next) {
+                            case 0:
+                                _context3.next = 2;
+                                return this._getToken();
+
+                            case 2:
+                                token = _context3.sent;
+                                return _context3.abrupt('return', new _promise2.default(function (resolve, reject) {
+                                    var client = new _binaryjsClient.BinaryClient(_this3._socketURL);
+                                    var isResolved = false;
+                                    var done = function done() {
+                                        if (!isResolved) {
+                                            resolve.apply(undefined, arguments);
+                                            client.close();
+                                        }
+                                        isResolved = true;
+                                    };
+                                    var fail = function fail() {
+                                        if (!isResolved) {
+                                            reject.apply(undefined, arguments);
+                                            client.close();
+                                        }
+                                    };
+                                    client.on('open', function () {
+                                        var streamSoc = client.createStream((0, _assign2.default)({
+                                            serviceName: _this3.getServiceName(),
+                                            appId: _this3.getAppId(),
+                                            appToken: token
+                                        }, config));
+                                        onStream(streamSoc);
+                                        var responseData = void 0;
+                                        streamSoc.on('data', function (data) {
+                                            if (data.status && !responseData) {
+                                                responseData = data;
+                                                return;
+                                            }
+                                            if (config.onData) {
+                                                config.onData(data, streamSoc);
+                                            }
+                                        });
+                                        streamSoc.on('close', function () {
+                                            if (responseData.status === 200) {
+                                                done(responseData);
+                                                return;
+                                            }
+                                            fail(responseData);
+                                            if (config.onClose) {
+                                                config.onClose(responseData, streamSoc);
+                                            }
+                                        });
+                                        streamSoc.on('error', function (err) {
+                                            return fail(err);
+                                        });
+                                    });
+                                    client.on('error', function (err) {
+                                        return fail(err);
+                                    });
+                                }));
+
+                            case 4:
+                            case 'end':
+                                return _context3.stop();
+                        }
+                    }
+                }, _callee3, this);
+            }));
+
+            function sendStream() {
+                return _ref4.apply(this, arguments);
+            }
+
+            return sendStream;
+        }()
     }]);
     return AbstractService;
 }(_axios.Axios);
+/*eslint-disable no-unused-vars*/
+
 
 _defaults2.default.transformResponse = [function transformResponse(data) {
     /*eslint no-param-reassign:0*/
@@ -320,5 +412,6 @@ _defaults2.default.transformResponse = [function transformResponse(data) {
     }
     return data;
 }];
+/*eslint-enable no-unused-vars*/
 
 exports.default = AbstractService;

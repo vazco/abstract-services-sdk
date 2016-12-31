@@ -45,6 +45,7 @@
   "dependencies": {
     "axios": "^0.15.2",
     "babel-runtime": "6.x.x",
+    "binaryjs-client": "^1.0.0",
     "cryptico-js": "^1.1.0",
     "ejson": "^2.1.2"
   }
