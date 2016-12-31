@@ -1,6 +1,7 @@
 import {Axios} from 'axios';
 import defaults from 'axios/lib/defaults';
 import EJSON from 'ejson';
+import {BinaryClient} from 'binaryjs-client';
 
 export class AbstractService extends Axios {
     constructor ({appId, baseURL, serviceName}) {
@@ -10,6 +11,7 @@ export class AbstractService extends Axios {
         super({headers, baseURL: baseURL.replace(/\/+$/, '')  + '/' + serviceName, url: ''});
         this._appId = appId;
         this._serviceName = serviceName;
+        this._socketURL = baseURL.replace(/^http/, 'ws').replace(/\/+$/, '')  + '/socket';
     }
 
     /**
@@ -132,6 +134,49 @@ export class AbstractService extends Axios {
      */
     patch (data, config = {}) {
         return this.request(Object.assign(config, {method: 'patch', data}));
+    }
+
+    async sendStream (onStream = () => {}, config = {}) {
+        const token = await this._getToken();
+        return new Promise((resolve, reject) => {
+            const client = new BinaryClient(this._socketURL);
+            const done = (...params) => {
+                resolve(...params);
+            };
+            const fail = (...params) => {
+                reject(...params);
+            };
+            client.on('open', () => {
+                const streamSoc = client.createStream(Object.assign({
+                    serviceName: this.getServiceName(),
+                    appId: this.getAppId(),
+                    appToken: token,
+                }, config);
+                onStream(streamSoc);
+                let responseData;
+                streamSoc.on('data', data => {
+                    if (data.status && !responseData) {
+                        responseData = data;
+                        return;
+                    }
+                    if (config.onData){
+                        config.onData(data, streamSoc);
+                    }
+                });
+                streamSoc.on('close', () => {
+                    if (responseData.status === 200) {
+                        done(responseData);
+                        return;
+                    }
+                    fail(responseData);
+                    if (config.onClose){
+                        config.onClose(responseData, streamSoc);
+                    }
+                });
+                streamSoc.on('error', err => fail(err));
+            });
+            client.on('error', err => fail(err));
+        });
     }
 }
 /*eslint-disable no-unused-vars*/

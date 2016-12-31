@@ -148,7 +148,6 @@ var AbstractService = exports.AbstractService = function (_Axios) {
             var _this2 = this;
 
             config = config || {};
-            var transformResponse = config.transformResponse || this.defaults.transformResponse || _defaults2.default.adapter;
             var adapter = config.adapter || this.defaults.adapter || _defaults2.default.adapter;
             config.adapter = function () {
                 var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(conf) {
@@ -310,6 +309,8 @@ var AbstractService = exports.AbstractService = function (_Axios) {
     }]);
     return AbstractService;
 }(_axios.Axios);
+/*eslint-disable no-unused-vars*/
+
 
 _defaults2.default.transformResponse = [function transformResponse(data) {
     /*eslint no-param-reassign:0*/
@@ -320,5 +321,6 @@ _defaults2.default.transformResponse = [function transformResponse(data) {
     }
     return data;
 }];
+/*eslint-enable no-unused-vars*/
 
 exports.default = AbstractService;
