@@ -140,18 +140,26 @@ export class AbstractService extends Axios {
         const token = await this._getToken();
         return new Promise((resolve, reject) => {
             const client = new BinaryClient(this._socketURL);
+            let isResolved = false;
             const done = (...params) => {
-                resolve(...params);
+                if (!isResolved) {
+                    resolve(...params);
+                    client.close();
+                }
+                isResolved = true;
             };
             const fail = (...params) => {
-                reject(...params);
+                if (!isResolved) {
+                    reject(...params);
+                    client.close();
+                }
             };
             client.on('open', () => {
                 const streamSoc = client.createStream(Object.assign({
                     serviceName: this.getServiceName(),
                     appId: this.getAppId(),
                     appToken: token,
-                }, config);
+                }, config));
                 onStream(streamSoc);
                 let responseData;
                 streamSoc.on('data', data => {
