@@ -55,17 +55,22 @@ var _ejson = require('ejson');
 
 var _ejson2 = _interopRequireDefault(_ejson);
 
-var _binaryjsClient = require('binaryjs-client');
+var _SdkError = require('./SdkError');
+
+var _SdkError2 = _interopRequireDefault(_SdkError);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var _ref = typeof window !== 'undefined' ? require('binaryjs-client') : require('binaryjs'),
+    BinaryClient = _ref.BinaryClient;
 
 var AbstractService = exports.AbstractService = function (_Axios) {
     (0, _inherits3.default)(AbstractService, _Axios);
 
-    function AbstractService(_ref) {
-        var appId = _ref.appId,
-            baseURL = _ref.baseURL,
-            serviceName = _ref.serviceName;
+    function AbstractService(_ref2) {
+        var appId = _ref2.appId,
+            baseURL = _ref2.baseURL,
+            serviceName = _ref2.serviceName;
         (0, _classCallCheck3.default)(this, AbstractService);
 
         var headers = {
@@ -100,7 +105,7 @@ var AbstractService = exports.AbstractService = function (_Axios) {
     }, {
         key: '_getToken',
         value: function () {
-            var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(config) {
+            var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(config) {
                 var token;
                 return _regenerator2.default.wrap(function _callee$(_context) {
                     while (1) {
@@ -144,55 +149,91 @@ var AbstractService = exports.AbstractService = function (_Axios) {
             }));
 
             function _getToken(_x) {
-                return _ref2.apply(this, arguments);
+                return _ref3.apply(this, arguments);
             }
 
             return _getToken;
         }()
     }, {
         key: 'request',
-        value: function request(config) {
-            var _this2 = this;
+        value: function () {
+            var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3(config) {
+                var _this2 = this;
 
-            config = config || {};
-            var adapter = config.adapter || this.defaults.adapter || _defaults2.default.adapter;
-            config.adapter = function () {
-                var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(conf) {
-                    var token;
-                    return _regenerator2.default.wrap(function _callee2$(_context2) {
-                        while (1) {
-                            switch (_context2.prev = _context2.next) {
-                                case 0:
-                                    _context2.next = 2;
-                                    return _this2._getToken(conf);
+                var adapter, res;
+                return _regenerator2.default.wrap(function _callee3$(_context3) {
+                    while (1) {
+                        switch (_context3.prev = _context3.next) {
+                            case 0:
+                                config = config || {};
+                                adapter = config.adapter || this.defaults.adapter || _defaults2.default.adapter;
 
-                                case 2:
-                                    token = _context2.sent;
+                                config.adapter = function () {
+                                    var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(conf) {
+                                        var token;
+                                        return _regenerator2.default.wrap(function _callee2$(_context2) {
+                                            while (1) {
+                                                switch (_context2.prev = _context2.next) {
+                                                    case 0:
+                                                        _context2.next = 2;
+                                                        return _this2._getToken(conf);
 
-                                    conf.headers = (0, _assign2.default)(conf.headers, {
-                                        'x-app-id': _this2.getAppId(),
-                                        'x-app-token': token
-                                    });
-                                    _context2.next = 6;
-                                    return adapter(conf);
+                                                    case 2:
+                                                        token = _context2.sent;
 
-                                case 6:
-                                    return _context2.abrupt('return', _context2.sent);
+                                                        conf.headers = (0, _assign2.default)(conf.headers, {
+                                                            'x-app-id': _this2.getAppId(),
+                                                            'x-app-token': token
+                                                        });
+                                                        _context2.next = 6;
+                                                        return adapter(conf);
 
-                                case 7:
-                                case 'end':
-                                    return _context2.stop();
-                            }
+                                                    case 6:
+                                                        return _context2.abrupt('return', _context2.sent);
+
+                                                    case 7:
+                                                    case 'end':
+                                                        return _context2.stop();
+                                                }
+                                            }
+                                        }, _callee2, _this2);
+                                    }));
+
+                                    return function (_x3) {
+                                        return _ref5.apply(this, arguments);
+                                    };
+                                }();
+
+                                _context3.prev = 3;
+                                _context3.next = 6;
+                                return (0, _get3.default)(AbstractService.prototype.__proto__ || (0, _getPrototypeOf2.default)(AbstractService.prototype), 'request', this).call(this, config);
+
+                            case 6:
+                                res = _context3.sent;
+
+                                _SdkError2.default.validateStatus(res.status, res.statusText);
+                                return _context3.abrupt('return', res);
+
+                            case 11:
+                                _context3.prev = 11;
+                                _context3.t0 = _context3['catch'](3);
+
+                                _SdkError2.default.extendError(_context3.t0, true);
+
+                            case 14:
+                            case 'end':
+                                return _context3.stop();
                         }
-                    }, _callee2, _this2);
-                }));
+                    }
+                }, _callee3, this, [[3, 11]]);
+            }));
 
-                return function (_x2) {
-                    return _ref3.apply(this, arguments);
-                };
-            }();
-            return (0, _get3.default)(AbstractService.prototype.__proto__ || (0, _getPrototypeOf2.default)(AbstractService.prototype), 'request', this).call(this, config);
-        }
+            function request(_x2) {
+                return _ref4.apply(this, arguments);
+            }
+
+            return request;
+        }()
 
         /**
          * Id of current app
@@ -316,23 +357,25 @@ var AbstractService = exports.AbstractService = function (_Axios) {
     }, {
         key: 'sendStream',
         value: function () {
-            var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3() {
+            var _ref6 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4() {
                 var _this3 = this;
 
                 var onStream = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function () {};
                 var config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
                 var token;
-                return _regenerator2.default.wrap(function _callee3$(_context3) {
+                return _regenerator2.default.wrap(function _callee4$(_context4) {
                     while (1) {
-                        switch (_context3.prev = _context3.next) {
+                        switch (_context4.prev = _context4.next) {
                             case 0:
-                                _context3.next = 2;
-                                return this._getToken();
+                                console.log('sendStream', config);
+                                _context4.next = 3;
+                                return this._getToken(config);
 
-                            case 2:
-                                token = _context3.sent;
-                                return _context3.abrupt('return', new _promise2.default(function (resolve, reject) {
-                                    var client = new _binaryjsClient.BinaryClient(_this3._socketURL);
+                            case 3:
+                                token = _context4.sent;
+                                return _context4.abrupt('return', new _promise2.default(function (resolve, reject) {
+                                    var client = new BinaryClient(_this3._socketURL);
+                                    console.log('client', _this3._socketURL, client);
                                     var isResolved = false;
                                     var done = function done() {
                                         if (!isResolved) {
@@ -352,11 +395,11 @@ var AbstractService = exports.AbstractService = function (_Axios) {
                                             serviceName: _this3.getServiceName(),
                                             appId: _this3.getAppId(),
                                             appToken: token
-                                        }, config));
-                                        onStream(streamSoc);
+                                        }, config && config.data || {}));
+                                        onStream(streamSoc, client);
                                         var responseData = void 0;
                                         streamSoc.on('data', function (data) {
-                                            if (data.status && !responseData) {
+                                            if (data && data.status && !responseData) {
                                                 responseData = data;
                                                 return;
                                             }
@@ -365,11 +408,12 @@ var AbstractService = exports.AbstractService = function (_Axios) {
                                             }
                                         });
                                         streamSoc.on('close', function () {
-                                            if (responseData.status === 200) {
+                                            if (responseData && responseData.status === 200) {
                                                 done(responseData);
                                                 return;
                                             }
-                                            fail(responseData);
+                                            var e = responseData && responseData.status && new _SdkError2.default(responseData.status, responseData.statusText);
+                                            fail(e || responseData);
                                             if (config.onClose) {
                                                 config.onClose(responseData, streamSoc);
                                             }
@@ -383,16 +427,16 @@ var AbstractService = exports.AbstractService = function (_Axios) {
                                     });
                                 }));
 
-                            case 4:
+                            case 5:
                             case 'end':
-                                return _context3.stop();
+                                return _context4.stop();
                         }
                     }
-                }, _callee3, this);
+                }, _callee4, this);
             }));
 
             function sendStream() {
-                return _ref4.apply(this, arguments);
+                return _ref6.apply(this, arguments);
             }
 
             return sendStream;

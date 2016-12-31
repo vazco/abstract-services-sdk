@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.AbstractService = exports.AbstractServicesSDK = undefined;
+exports.SdkError = exports.AbstractService = exports.AbstractServicesSDK = undefined;
 
 var _regenerator = require('babel-runtime/regenerator');
 
@@ -38,6 +38,10 @@ var _crypticoJs2 = _interopRequireDefault(_crypticoJs);
 var _AbstractService = require('./AbstractService');
 
 var _AbstractService2 = _interopRequireDefault(_AbstractService);
+
+var _SdkError = require('./SdkError');
+
+var _SdkError2 = _interopRequireDefault(_SdkError);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -196,4 +200,5 @@ var AbstractServicesSDK = exports.AbstractServicesSDK = function () {
 }();
 
 exports.AbstractService = _AbstractService2.default;
+exports.SdkError = _SdkError2.default;
 exports.default = AbstractServicesSDK;
