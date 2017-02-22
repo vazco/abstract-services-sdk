@@ -32,6 +32,7 @@ Parameter token can be type of `string` or `function`, which returns token direc
 ##### AbstractService#post(data[, config=])
 ##### AbstractService#put(data[, config=])
 ##### AbstractService#patch(data[, config=])
+##### AbstractService#sendStream(onStream[, config=])
 
 #### Request Config
 These are the available config options for making requests.
@@ -187,6 +188,120 @@ The response for a request contains the following information.
   config: {}
 }
 ```
+
+#### Stream Socket
+
+Abstract Service Class has also implemented the socket communication with remote service via binary socket.
+Function `myService.sendStream(onStream[,config])` will initiate a binary socket connection.
+
+The Callback `onStream(stream, client)` will be launched just after connection, so this is the place where you can write something to socket.
+
+- `stream.write`
+- `stream.end`
+- `stream.send`
+- `stream.destroy`
+- `stream.pause`
+- `stream.resume`
+- `stream.pipe`
+- `stream.on('eventName', () => {})`
+- `stream.once('eventName', () => {})`
+- `stream.off('eventName', () => {})`
+
+  
+### stream.id
+
+A id number identifying the stream. Unique to the given client, but not globally.
+
+### stream.readable
+
+Whether stream is readable.
+
+### stream.writable
+
+Whether stream is writable.
+
+### stream.paused
+
+Whether stream is paused.
+
+### stream.pause()
+
+Pause the stream.
+
+### stream.resume()
+
+Resume the stream.
+
+### stream.end()
+
+Sends an end message, triggering the `end` event and marks `stream.readable` false but does not close the socket.
+
+
+### stream.write(data)
+
+Returns `true` if data is written immediately or `false` if data is buffered in socket.
+
+Writes `data` through the connection. `data` can be any JSON compatible type or binary data. Note data will not be chunked. `client.send` should be used for chunking.
+
+### stream.destroy()
+
+Immediately closed the socket.
+
+### stream.pipe(destination, [options])
+
+This is a Stream.prototype method available on all Streams.
+
+See:
+http://nodejs.org/api/stream.html#stream_stream_pipe_destination_options
+
+### Event: 'data'
+
+`function (data) { }`
+
+Is emitted when data is received through the socket.
+
+For non-binary types, data is received verbatim as sent.
+
+On Node.js, binary data is received as `Buffer`.
+
+On browsers, binary data is received as `ArrayBuffer`.
+
+### Event: 'pause'
+
+`function () { }`
+
+Is emitted when stream is paused.
+
+### Event: 'resume'
+
+`function () { }`
+
+Is emitted when stream is resumed.
+
+### Event: 'end'
+
+`function () { }`
+
+Is emitted when `stream.end` has been called. `stream.readable` is set to `false`.
+
+### Event: 'close'
+
+`function () { }`
+
+Emitted when the connection is destroyed or its underlying socket is closed.
+
+
+### Event: 'drain'
+
+`function () { }`
+
+Emitted when the underlying socket buffer has drained. Used for stream pipe internals.
+
+### Event: 'error'
+
+`function (error) { }`
+
+If the client emits an error, this event is emitted (errors from the underlying net.Socket are forwarded here). `stream.readable` and `stream.writable` are set to `false`.
 
 
 ## Linting
