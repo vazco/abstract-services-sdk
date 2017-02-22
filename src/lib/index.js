@@ -1,6 +1,7 @@
 import {randomString, shuffleProps} from './helpers';
 import cryptico from 'cryptico-js';
 import AbstractService from './AbstractService';
+import SdkError from './SdkError';
 
 export class AbstractServicesSDK {
     constructor ({url, appId, publicKeyString = '', ServiceClasses = {}}) {
@@ -91,7 +92,7 @@ export class AbstractServicesSDK {
     }
 }
 
-export {AbstractService};
+export {AbstractService, SdkError};
 
 export default AbstractServicesSDK;
 

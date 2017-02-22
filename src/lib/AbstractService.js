@@ -1,7 +1,9 @@
 import {Axios} from 'axios';
 import defaults from 'axios/lib/defaults';
 import EJSON from 'ejson';
-import {BinaryClient} from 'binaryjs-client';
+import SdkError from './SdkError';
+
+const {BinaryClient} = typeof window !== 'undefined' ? require('binaryjs-client') : require('binaryjs');
 
 export class AbstractService extends Axios {
     constructor ({appId, baseURL, serviceName}) {
@@ -41,7 +43,7 @@ export class AbstractService extends Axios {
         return this._token;
     }
 
-    request (config) {
+    async request (config) {
         config = config || {};
         const adapter =  config.adapter || this.defaults.adapter || defaults.adapter;
         config.adapter = async conf => {
@@ -52,7 +54,14 @@ export class AbstractService extends Axios {
             });
             return await adapter(conf);
         };
-        return super.request(config);
+
+        try {
+            const res = await (super.request(config));
+            SdkError.validateStatus(res.status, res.statusText);
+            return res;
+        } catch (e) {
+            SdkError.extendError(e, true);
+        }
     }
 
     /**
@@ -137,7 +146,7 @@ export class AbstractService extends Axios {
     }
 
     async sendStream (onStream = () => {}, config = {}) {
-        const token = await this._getToken();
+        const token = await this._getToken(config);
         return new Promise((resolve, reject) => {
             const client = new BinaryClient(this._socketURL);
             let isResolved = false;
@@ -159,25 +168,30 @@ export class AbstractService extends Axios {
                     serviceName: this.getServiceName(),
                     appId: this.getAppId(),
                     appToken: token,
-                }, config));
-                onStream(streamSoc);
+                }, (config && config.data) || {}));
+                onStream(streamSoc, client);
                 let responseData;
                 streamSoc.on('data', data => {
-                    if (data.status && !responseData) {
+                    if (data && data.status && !responseData) {
                         responseData = data;
                         return;
                     }
-                    if (config.onData){
+                    if (config.onData) {
                         config.onData(data, streamSoc);
                     }
                 });
                 streamSoc.on('close', () => {
-                    if (responseData.status === 200) {
+                    if (responseData && responseData.status === 200) {
                         done(responseData);
                         return;
                     }
-                    fail(responseData);
-                    if (config.onClose){
+                    const e = (
+                        responseData &&
+                        responseData.status &&
+                        new SdkError(responseData.status, responseData.statusText)
+                    );
+                    fail(e || responseData);
+                    if (config.onClose) {
                         config.onClose(responseData, streamSoc);
                     }
                 });
