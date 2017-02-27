@@ -1,6 +1,6 @@
 {
   "name": "abstract-services-sdk",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "description": "This package helps to build SDK for universe services",
   "main": "index.js",
   "scripts": {

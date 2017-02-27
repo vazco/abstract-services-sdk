@@ -170,11 +170,11 @@ export class AbstractService extends Axios {
                     appToken: token,
                 }, (config && config.data) || {}));
                 onStream(streamSoc, client);
-                let responseData = {};
+                const responseData = {status: -1};
                 streamSoc.on('data', data => {
                     if (data && data.status) {
                         const {status, statusText, result} = data;
-                        if (!responseData.status || responseData.status < 200) {
+                        if (responseData.status < 200) {
                             responseData.status = status;
                             responseData.statusText = statusText;
                             responseData.result = Object.assign(responseData.result || {}, result);
