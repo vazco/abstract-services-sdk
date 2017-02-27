@@ -395,10 +395,20 @@ var AbstractService = exports.AbstractService = function (_Axios) {
                                             appToken: token
                                         }, config && config.data || {}));
                                         onStream(streamSoc, client);
-                                        var responseData = void 0;
+                                        var responseData = {};
                                         streamSoc.on('data', function (data) {
-                                            if (data && data.status && !responseData) {
-                                                responseData = data;
+                                            if (data && data.status) {
+                                                var status = data.status,
+                                                    statusText = data.statusText,
+                                                    result = data.result;
+
+                                                if (!responseData.status || responseData.status < 200) {
+                                                    responseData.status = status;
+                                                    responseData.statusText = statusText;
+                                                    responseData.result = (0, _assign2.default)(responseData.result || {}, result);
+                                                } else {
+                                                    responseData.result = (0, _assign2.default)(responseData.result || {}, result);
+                                                }
                                                 return;
                                             }
                                             if (config.onData) {
@@ -433,7 +443,7 @@ var AbstractService = exports.AbstractService = function (_Axios) {
                 }, _callee4, this);
             }));
 
-            function sendStream(_x10, _x11) {
+            function sendStream() {
                 return _ref6.apply(this, arguments);
             }
 
