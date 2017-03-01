@@ -398,40 +398,18 @@ var AbstractService = exports.AbstractService = function (_Axios) {
                                             appId: _this3.getAppId(),
                                             appToken: token
                                         }, config && config.data || {}));
-                                        onStream(streamSoc, client);
-                                        var responseData = { status: -1 };
-                                        streamSoc.on('data', function (data) {
+                                        var _onData = streamSoc._onData;
+                                        streamSoc._onData = function (data) {
                                             if ((typeof data === 'undefined' ? 'undefined' : (0, _typeof3.default)(data)) === 'object') {
                                                 data = _ejson2.default.fromJSONValue(data);
-                                                if (data && data.status) {
-                                                    var _data = data,
-                                                        status = _data.status,
-                                                        statusText = _data.statusText,
-                                                        result = _data.result;
-
-                                                    responseData.status = responseData.status < 300 ? status : responseData.status;
-                                                    responseData.statusText = statusText;
-                                                    responseData.result = (0, _assign2.default)(responseData.result || {}, result);
-                                                }
                                             }
-                                            if (config.onData) {
-                                                config.onData(responseData, data, streamSoc);
-                                            }
-                                        });
-                                        streamSoc.on('close', function () {
-                                            if (responseData && responseData.status < 300) {
-                                                done(responseData);
-                                                return;
-                                            }
-                                            var e = responseData && responseData.status && new _SdkError2.default(responseData.status, responseData.statusText);
-                                            fail(e || responseData);
-                                            if (config.onClose) {
-                                                config.onClose(responseData, streamSoc);
-                                            }
-                                        });
+                                            return _onData.call(this, data);
+                                        };
+                                        onStream(streamSoc, client);
                                         streamSoc.on('error', function (err) {
                                             return fail(err);
                                         });
+                                        streamSoc.on('close', done);
                                     });
                                     client.on('error', function (err) {
                                         return fail(err);
