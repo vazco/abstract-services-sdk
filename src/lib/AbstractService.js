@@ -169,38 +169,16 @@ export class AbstractService extends Axios {
                     appId: this.getAppId(),
                     appToken: token,
                 }, (config && config.data) || {}));
-                onStream(streamSoc, client);
-                const responseData = {status: -1};
-                streamSoc.on('data', data => {
+                const _onData = streamSoc._onData;
+                streamSoc._onData = function (data) {
                     if (typeof data === 'object') {
                         data = EJSON.fromJSONValue(data);
-                        if (data && data.status) {
-                            const {status, statusText, result} = data;
-                            responseData.status = responseData.status < 300 ? status : responseData.status;
-                            responseData.statusText = statusText;
-                            responseData.result = Object.assign(responseData.result || {}, result);
-                        }
                     }
-                    if (config.onData) {
-                        config.onData(responseData, data, streamSoc);
-                    }
-                });
-                streamSoc.on('close', () => {
-                    if (responseData && responseData.status < 300) {
-                        done(responseData);
-                        return;
-                    }
-                    const e = (
-                        responseData &&
-                        responseData.status &&
-                        new SdkError(responseData.status, responseData.statusText)
-                    );
-                    fail(e || responseData);
-                    if (config.onClose) {
-                        config.onClose(responseData, streamSoc);
-                    }
-                });
+                    return _onData.call(this, data);
+                };
+                onStream(streamSoc, client);
                 streamSoc.on('error', err => fail(err));
+                streamSoc.on('close', done);
             });
             client.on('error', err => fail(err));
         });
