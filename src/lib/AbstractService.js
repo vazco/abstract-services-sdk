@@ -171,8 +171,13 @@ export class AbstractService extends Axios {
                 }, (config && config.data) || {}));
                 const _on = streamSoc.on;
                 streamSoc.on = function on (eventName, ...data) {
-                    if (eventName === 'data' && typeof data[0] === 'object') {
-                        data[0] = EJSON.fromJSONValue(data[0]);
+                    if (eventName === 'data' && typeof data[0] === 'function') {
+                        data[0] = d => {
+                            if (typeof d === 'object') {
+                                return data[0](EJSON.fromJSONValue(d));
+                            }
+                            return data[0](d);
+                        };
                     }
                     return _on.call(this, eventName, ...data);
                 };
