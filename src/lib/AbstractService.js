@@ -186,7 +186,7 @@ export class AbstractService extends Axios {
                     }
                 });
                 streamSoc.on('close', () => {
-                    if (responseData && responseData.status === 200) {
+                    if (responseData && responseData.status < 300) {
                         done(responseData);
                         return;
                     }

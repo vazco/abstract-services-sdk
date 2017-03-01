@@ -410,14 +410,9 @@ var AbstractService = exports.AbstractService = function (_Axios) {
                                                     statusText = _data.statusText,
                                                     result = _data.result;
 
-                                                if (responseData.status < 200) {
-                                                    responseData.status = status;
-                                                    responseData.statusText = statusText;
-                                                    responseData.result = (0, _assign2.default)(responseData.result || {}, result);
-                                                } else {
-                                                    responseData.result = (0, _assign2.default)(responseData.result || {}, result);
-                                                }
-                                                return;
+                                                responseData.status = responseData.status < 300 ? status : responseData.status;
+                                                responseData.statusText = statusText;
+                                                responseData.result = (0, _assign2.default)(responseData.result || {}, result);
                                             }
                                             if (config.onData) {
                                                 config.onData(responseData, data, streamSoc);
