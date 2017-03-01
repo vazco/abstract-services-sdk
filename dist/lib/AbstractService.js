@@ -5,6 +5,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.AbstractService = undefined;
 
+var _typeof2 = require('babel-runtime/helpers/typeof');
+
+var _typeof3 = _interopRequireDefault(_typeof2);
+
 var _promise = require('babel-runtime/core-js/promise');
 
 var _promise2 = _interopRequireDefault(_promise);
@@ -395,14 +399,18 @@ var AbstractService = exports.AbstractService = function (_Axios) {
                                             appToken: token
                                         }, config && config.data || {}));
                                         onStream(streamSoc, client);
-                                        var responseData = {};
+                                        var responseData = { status: -1 };
                                         streamSoc.on('data', function (data) {
+                                            if ((typeof data === 'undefined' ? 'undefined' : (0, _typeof3.default)(data)) === 'object') {
+                                                data = _ejson2.default.fromJSONValue(data);
+                                            }
                                             if (data && data.status) {
-                                                var status = data.status,
-                                                    statusText = data.statusText,
-                                                    result = data.result;
+                                                var _data = data,
+                                                    status = _data.status,
+                                                    statusText = _data.statusText,
+                                                    result = _data.result;
 
-                                                if (!responseData.status || responseData.status < 200) {
+                                                if (responseData.status < 200) {
                                                     responseData.status = status;
                                                     responseData.statusText = statusText;
                                                     responseData.result = (0, _assign2.default)(responseData.result || {}, result);
@@ -412,7 +420,7 @@ var AbstractService = exports.AbstractService = function (_Axios) {
                                                 return;
                                             }
                                             if (config.onData) {
-                                                config.onData(data, streamSoc);
+                                                config.onData(responseData, data, streamSoc);
                                             }
                                         });
                                         streamSoc.on('close', function () {
@@ -443,7 +451,7 @@ var AbstractService = exports.AbstractService = function (_Axios) {
                 }, _callee4, this);
             }));
 
-            function sendStream() {
+            function sendStream(_x10, _x11) {
                 return _ref6.apply(this, arguments);
             }
 

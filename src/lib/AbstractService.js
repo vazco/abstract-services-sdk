@@ -172,6 +172,9 @@ export class AbstractService extends Axios {
                 onStream(streamSoc, client);
                 const responseData = {status: -1};
                 streamSoc.on('data', data => {
+                    if (typeof data === 'object') {
+                        data = EJSON.fromJSONValue(data);
+                    }
                     if (data && data.status) {
                         const {status, statusText, result} = data;
                         if (responseData.status < 200) {
@@ -184,7 +187,7 @@ export class AbstractService extends Axios {
                         return;
                     }
                     if (config.onData) {
-                        config.onData(data, streamSoc);
+                        config.onData(responseData, data, streamSoc);
                     }
                 });
                 streamSoc.on('close', () => {
