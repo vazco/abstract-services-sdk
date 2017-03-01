@@ -403,23 +403,23 @@ var AbstractService = exports.AbstractService = function (_Axios) {
                                         streamSoc.on('data', function (data) {
                                             if ((typeof data === 'undefined' ? 'undefined' : (0, _typeof3.default)(data)) === 'object') {
                                                 data = _ejson2.default.fromJSONValue(data);
-                                            }
-                                            if (data && data.status) {
-                                                var _data = data,
-                                                    status = _data.status,
-                                                    statusText = _data.statusText,
-                                                    result = _data.result;
+                                                if (data && data.status) {
+                                                    var _data = data,
+                                                        status = _data.status,
+                                                        statusText = _data.statusText,
+                                                        result = _data.result;
 
-                                                responseData.status = responseData.status < 300 ? status : responseData.status;
-                                                responseData.statusText = statusText;
-                                                responseData.result = (0, _assign2.default)(responseData.result || {}, result);
+                                                    responseData.status = responseData.status < 300 ? status : responseData.status;
+                                                    responseData.statusText = statusText;
+                                                    responseData.result = (0, _assign2.default)(responseData.result || {}, result);
+                                                }
                                             }
                                             if (config.onData) {
                                                 config.onData(responseData, data, streamSoc);
                                             }
                                         });
                                         streamSoc.on('close', function () {
-                                            if (responseData && responseData.status === 200) {
+                                            if (responseData && responseData.status < 300) {
                                                 done(responseData);
                                                 return;
                                             }
