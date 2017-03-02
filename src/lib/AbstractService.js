@@ -169,17 +169,12 @@ export class AbstractService extends Axios {
                     appId: this.getAppId(),
                     appToken: token,
                 }, (config && config.data) || {}));
-                const _on = streamSoc.on;
-                streamSoc.on = function on (eventName, ...data) {
-                    if (eventName === 'data' && typeof data[0] === 'function') {
-                        data[0] = d => {
-                            if (typeof d === 'object') {
-                                return data[0](EJSON.fromJSONValue(d));
-                            }
-                            return data[0](d);
-                        };
+                const _onData = streamSoc._onData.bind(streamSoc);
+                streamSoc._onData = data =>  {
+                    if (typeof data === 'object' && !EJSON.isBinary(data)) {
+                        return _onData(EJSON.fromJSONValue(data));
                     }
-                    return _on.call(this, eventName, ...data);
+                    return _onData(data);
                 };
                 onStream(streamSoc, client);
                 streamSoc.on('error', err => fail(err));

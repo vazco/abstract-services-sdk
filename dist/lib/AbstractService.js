@@ -398,16 +398,12 @@ var AbstractService = exports.AbstractService = function (_Axios) {
                                             appId: _this3.getAppId(),
                                             appToken: token
                                         }, config && config.data || {}));
-                                        var _on = streamSoc.on;
-                                        streamSoc.on = function on(eventName) {
-                                            for (var _len = arguments.length, data = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-                                                data[_key - 1] = arguments[_key];
+                                        var _onData = streamSoc._onData.bind(streamSoc);
+                                        streamSoc._onData = function (data) {
+                                            if ((typeof data === 'undefined' ? 'undefined' : (0, _typeof3.default)(data)) === 'object' && !_ejson2.default.isBinary(data)) {
+                                                return _onData(_ejson2.default.fromJSONValue(data));
                                             }
-
-                                            if (eventName === 'data' && (0, _typeof3.default)(data[0]) === 'object') {
-                                                data[0] = _ejson2.default.fromJSONValue(data[0]);
-                                            }
-                                            return _on.call.apply(_on, [this, eventName].concat(data));
+                                            return _onData(data);
                                         };
                                         onStream(streamSoc, client);
                                         streamSoc.on('error', function (err) {
