@@ -13,7 +13,7 @@ export class AbstractServicesSDK {
         this._tokenGetters = {};
     }
 
-    generateWebToken ({userId = '', groupId = '', sessionId = '', hash = '', ttl = 86400} = {}) {
+    generateWebToken ({userId = '', groupId = '', sessionId = '', hash = '', ttl = 86400, adminKey = ''} = {}) {
         if (!this._publicKeyString) {
             throw new Error('Generation of tokens is not available for current instance,' +
                 ' probably you should generate token on server side or publicKeyString was not provided');
@@ -37,6 +37,10 @@ export class AbstractServicesSDK {
 
         if (hash) {
             credentials.h = hash;
+        }
+
+        if (adminKey) {
+            credentials.a = adminKey;
         }
 
         if (groupId) {

@@ -17,7 +17,8 @@ const DEFAULT_TOKEN_PARAMS = {
     userId: 'u123',
     sessionId: 's1',
     hash: 'abc',
-    groupId: 'g12'
+    groupId: 'g12',
+    adminKey: 'ttt'
 };
 const SERVICE_NAME = 'testService';
 const HOST_URL = 'http://test';

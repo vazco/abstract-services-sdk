@@ -76,7 +76,9 @@ var AbstractServicesSDK = exports.AbstractServicesSDK = function () {
                 _ref2$hash = _ref2.hash,
                 hash = _ref2$hash === undefined ? '' : _ref2$hash,
                 _ref2$ttl = _ref2.ttl,
-                ttl = _ref2$ttl === undefined ? 86400 : _ref2$ttl;
+                ttl = _ref2$ttl === undefined ? 86400 : _ref2$ttl,
+                _ref2$adminKey = _ref2.adminKey,
+                adminKey = _ref2$adminKey === undefined ? '' : _ref2$adminKey;
 
             if (!this._publicKeyString) {
                 throw new Error('Generation of tokens is not available for current instance,' + ' probably you should generate token on server side or publicKeyString was not provided');
@@ -100,6 +102,10 @@ var AbstractServicesSDK = exports.AbstractServicesSDK = function () {
 
             if (hash) {
                 credentials.h = hash;
+            }
+
+            if (adminKey) {
+                credentials.a = adminKey;
             }
 
             if (groupId) {

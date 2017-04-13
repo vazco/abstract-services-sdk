@@ -424,7 +424,7 @@ var AbstractService = exports.AbstractService = function (_Axios) {
                 }, _callee4, this);
             }));
 
-            function sendStream(_x10, _x11) {
+            function sendStream() {
                 return _ref6.apply(this, arguments);
             }
 
