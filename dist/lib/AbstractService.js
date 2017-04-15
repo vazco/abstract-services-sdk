@@ -74,19 +74,19 @@ var AbstractService = exports.AbstractService = function (_Axios) {
     function AbstractService(_ref2) {
         var appId = _ref2.appId,
             baseURL = _ref2.baseURL,
-            serviceName = _ref2.serviceName;
+            serviceName = _ref2.serviceName,
+            _ref2$authByCustomHea = _ref2.authByCustomHeader,
+            authByCustomHeader = _ref2$authByCustomHea === undefined ? false : _ref2$authByCustomHea,
+            _ref2$headers = _ref2.headers,
+            headers = _ref2$headers === undefined ? {} : _ref2$headers;
         (0, _classCallCheck3.default)(this, AbstractService);
 
-        var headers = {
-            'User-Agent': 'Services SDK',
-            'x-app-id': appId
-        };
-
-        var _this = (0, _possibleConstructorReturn3.default)(this, (AbstractService.__proto__ || (0, _getPrototypeOf2.default)(AbstractService)).call(this, { headers: headers, baseURL: baseURL.replace(/\/+$/, '') + '/' + serviceName, url: '' }));
+        var _this = (0, _possibleConstructorReturn3.default)(this, (AbstractService.__proto__ || (0, _getPrototypeOf2.default)(AbstractService)).call(this, { baseURL: baseURL.replace(/\/+$/, '') + '/' + appId + '/' + serviceName, url: '', headers: headers }));
 
         _this._appId = appId;
         _this._serviceName = serviceName;
         _this._socketURL = baseURL.replace(/^http/, 'ws').replace(/\/+$/, '') + '/socket';
+        _this._authByCustomHeader = authByCustomHeader;
         return _this;
     }
 
@@ -105,7 +105,6 @@ var AbstractService = exports.AbstractService = function (_Axios) {
                 return;
             }
             this._token = token;
-            // this.defaults.headers['x-app-token'] = token;
         }
     }, {
         key: '_getToken',
@@ -186,10 +185,16 @@ var AbstractService = exports.AbstractService = function (_Axios) {
                                                     case 2:
                                                         token = _context2.sent;
 
-                                                        conf.headers = (0, _assign2.default)(conf.headers, {
-                                                            'x-app-id': _this2.getAppId(),
-                                                            'x-app-token': token
-                                                        });
+                                                        if (_this2._authByCustomHeader || conf.authByCustomHeader || config.auth) {
+                                                            conf.headers = (0, _assign2.default)(conf.headers, {
+                                                                'x-app-id': _this2.getAppId(),
+                                                                'x-app-token': token
+                                                            });
+                                                        } else {
+                                                            conf.headers = (0, _assign2.default)(conf.headers, {
+                                                                'Authorization': 'Bearer ' + token
+                                                            });
+                                                        }
                                                         _context2.next = 6;
                                                         return adapter(conf);
 

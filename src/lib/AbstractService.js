@@ -6,15 +6,12 @@ import SdkError from './SdkError';
 const {BinaryClient} = typeof window !== 'undefined' ? require('binaryjs-client') : require('binaryjs');
 
 export class AbstractService extends Axios {
-    constructor ({appId, baseURL, serviceName}) {
-        const headers = {
-            'User-Agent': 'Services SDK',
-            'x-app-id': appId
-        };
-        super({headers, baseURL: baseURL.replace(/\/+$/, '')  + '/' + serviceName, url: ''});
+    constructor ({appId, baseURL, serviceName, authByCustomHeader = false, headers = {}}) {
+        super({baseURL: `${baseURL.replace(/\/+$/, '')}/${appId}/${serviceName}`, url: '', headers});
         this._appId = appId;
         this._serviceName = serviceName;
         this._socketURL = baseURL.replace(/^http/, 'ws').replace(/\/+$/, '')  + '/socket';
+        this._authByCustomHeader = authByCustomHeader;
     }
 
     /**
@@ -28,7 +25,6 @@ export class AbstractService extends Axios {
             return;
         }
         this._token = token;
-        // this.defaults.headers['x-app-token'] = token;
     }
 
     async _getToken (config) {
@@ -49,10 +45,16 @@ export class AbstractService extends Axios {
         const adapter =  config.adapter || this.defaults.adapter || defaults.adapter;
         config.adapter = async conf => {
             const token = await this._getToken(conf);
-            conf.headers = Object.assign(conf.headers, {
-                'x-app-id': this.getAppId(),
-                'x-app-token': token
-            });
+            if (this._authByCustomHeader || conf.authByCustomHeader || config.auth) {
+                conf.headers = Object.assign(conf.headers, {
+                    'x-app-id': this.getAppId(),
+                    'x-app-token': token
+                });
+            } else {
+                conf.headers = Object.assign(conf.headers, {
+                    'Authorization': 'Bearer ' + token
+                });
+            }
             return await adapter(conf);
         };
 

@@ -94,38 +94,80 @@ describe('AbstractService', () => {
         should.exist(testService.defaults.headers);
         expect(testService.getServiceName()).to.be.equal(SERVICE_NAME);
         expect(testService.getAppId()).to.be.equal(APP_ID);
-        expect(testService.getBaseURL()).to.be.equal(HOST_URL + '/' + SERVICE_NAME);
+        expect(testService.getBaseURL()).to.be.equal(HOST_URL + '/' + APP_ID + '/' + SERVICE_NAME);
     });
 
-    it('auth headers', async () => {
+    it('authorization headers', async () => {
         const testService = await testSDK.getService('testService');
         testService.setToken(token2);
         testService.setTestAdapter(cfg => {
             cfg.headers.should.be.an('object');
-            expect(cfg.headers).to.include.keys('x-app-id', 'x-app-token');
-            expect(cfg.headers['x-app-id']).to.be.equal(APP_ID);
-            expect(cfg.headers['x-app-token']).to.be.equal(token2);
-            expect(cfg.headers['x-app-token']).to.not.equal(token1);
+            const headers = {};
+            Object.keys(cfg.headers).forEach(k => headers[k.toLowerCase()] = cfg.headers[k]);
+            expect(headers).to.include.keys('authorization');
+            expect(headers['authorization']).to.be.equal('Bearer ' + token2);
+            expect(headers['authorization']).to.not.equal('Bearer ' + token1);
             return Promise.resolve(cfg);
         });
         await testService.request({});
     });
 
-    it('auth headers - getter with promise', async () => {
+    it('authorization headers - getter with promise', async () => {
         const testService = await testSDK.getService('testService');
-        testService.setToken(() => Promise.resolve(token1));
-        testService.setTestAdapter(cfg => {
-            expect(cfg.headers['x-app-token']).to.be.equal(token1);
-            expect(cfg.headers['x-app-token']).to.not.equal(token2);
-            return Promise.resolve(cfg);
-        });
-        await testService.request({});
         testService.setToken(() => Promise.resolve(token2));
         testService.setTestAdapter(cfg => {
-            expect(cfg.headers['x-app-token']).to.be.equal(token2);
-            expect(cfg.headers['x-app-token']).to.not.equal(token1);
+            cfg.headers.should.be.an('object');
+            const headers = {};
+            Object.keys(cfg.headers).forEach(k => headers[k.toLowerCase()] = cfg.headers[k]);
+            expect(headers['authorization']).to.be.equal('Bearer ' + token2);
+            expect(headers['authorization']).to.not.equal('Bearer ' + token1);
             return Promise.resolve(cfg);
         });
         await testService.request({});
     });
+
+    it('custom headers', async () => {
+        const testService = await testSDK.getService('testService');
+        testService._authByCustomHeader = true;
+        testService.setToken(token2);
+        testService.setTestAdapter(cfg => {
+            cfg.headers.should.be.an('object');
+            const headers = {};
+            Object.keys(cfg.headers).forEach(k => headers[k.toLowerCase()] = cfg.headers[k]);
+            expect(headers).to.include.keys('x-app-id', 'x-app-token');
+            expect(headers['x-app-id']).to.be.equal(APP_ID);
+            expect(headers['x-app-token']).to.be.equal(token2);
+            expect(headers['x-app-token']).to.not.equal(token1);
+            return Promise.resolve(cfg);
+        });
+        await testService.request({});
+    });
+
+
+    it('custom auth headers - getter with promise', async () => {
+        const testService = await testSDK.getService('testService');
+        testService._authByCustomHeader = true;
+        testService.setToken(() => Promise.resolve(token1));
+        testService.setTestAdapter(cfg => {
+            cfg.headers.should.be.an('object');
+            const headers = {};
+            Object.keys(cfg.headers).forEach(k => headers[k.toLowerCase()] = cfg.headers[k]);
+            expect(headers['x-app-token']).to.be.equal(token1);
+            expect(headers['x-app-token']).to.not.equal(token2);
+            return Promise.resolve(cfg);
+        });
+        await testService.request({});
+        testService._authByCustomHeader = true;
+        testService.setToken(() => Promise.resolve(token2));
+        testService.setTestAdapter(cfg => {
+            cfg.headers.should.be.an('object');
+            const headers = {};
+            Object.keys(cfg.headers).forEach(k => headers[k.toLowerCase()] = cfg.headers[k]);
+            expect(headers['x-app-token']).to.be.equal(token2);
+            expect(headers['x-app-token']).to.not.equal(token1);
+            return Promise.resolve(cfg);
+        });
+        await testService.request({});
+    });
+
 });
