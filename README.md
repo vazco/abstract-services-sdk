@@ -106,7 +106,7 @@ These are the available config options for making requests.
   },
 
   // `auth` indicates that HTTP Basic auth should be used, and supplies credentials.
-  // This will set an `Authorization` header, overwriting any existing but not `x-app-id` or `x-app-token`
+  // This will set an `Authorization` header, overwriting any existing but you can use `x-app-id` or `x-app-token`
   // `Authorization` custom headers you have set using `headers`.
   auth: {
     username: 'janedoe',
