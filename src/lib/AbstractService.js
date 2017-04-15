@@ -8,6 +8,7 @@ const {BinaryClient} = typeof window !== 'undefined' ? require('binaryjs-client'
 export class AbstractService extends Axios {
     constructor ({appId, baseURL, serviceName}) {
         const headers = {
+            'User-Agent': 'Services SDK',
             'x-app-id': appId
         };
         super({headers, baseURL: baseURL.replace(/\/+$/, '')  + '/' + serviceName, url: ''});

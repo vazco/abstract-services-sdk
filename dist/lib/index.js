@@ -31,9 +31,9 @@ var _createClass3 = _interopRequireDefault(_createClass2);
 
 var _helpers = require('./helpers');
 
-var _crypticoJs = require('cryptico-js');
+var _nodeRsa = require('node-rsa');
 
-var _crypticoJs2 = _interopRequireDefault(_crypticoJs);
+var _nodeRsa2 = _interopRequireDefault(_nodeRsa);
 
 var _AbstractService = require('./AbstractService');
 
@@ -57,7 +57,15 @@ var AbstractServicesSDK = exports.AbstractServicesSDK = function () {
 
         this._appId = appId;
         this._url = url;
-        this._publicKeyString = publicKeyString;
+        if (publicKeyString) {
+            if (publicKeyString.indexOf('-----BEGIN PUBLIC KEY-----') === 0) {
+                var key = new _nodeRsa2.default();
+                key.importKey(publicKeyString, 'pkcs8-public');
+                this._publicKey = key;
+            } else {
+                throw new TypeError('Expected public key in pkcs8 format');
+            }
+        }
         this._serviceClasses = ServiceClasses;
         this._services = {};
         this._tokenGetters = {};
@@ -80,7 +88,7 @@ var AbstractServicesSDK = exports.AbstractServicesSDK = function () {
                 _ref2$adminKey = _ref2.adminKey,
                 adminKey = _ref2$adminKey === undefined ? '' : _ref2$adminKey;
 
-            if (!this._publicKeyString) {
+            if (!this._publicKey) {
                 throw new Error('Generation of tokens is not available for current instance,' + ' probably you should generate token on server side or publicKeyString was not provided');
             }
             var credentials = {
@@ -112,12 +120,7 @@ var AbstractServicesSDK = exports.AbstractServicesSDK = function () {
                 credentials.g = groupId;
             }
 
-            var result = _crypticoJs2.default.encrypt((0, _stringify2.default)((0, _helpers.shuffleProps)(credentials)), this._publicKeyString);
-            if (result.status !== 'success') {
-                throw new Error('Encryption failure');
-            }
-
-            return result.cipher;
+            return this._publicKey.encrypt((0, _stringify2.default)((0, _helpers.shuffleProps)(credentials)), 'base64');
         }
 
         /**

@@ -47,7 +47,7 @@
     "babel-runtime": "6.x.x",
     "binaryjs": "https://github.com/binaryjs/binaryjs/tarball/79f51d6431e32226ab16e1b17bf7048e9a7e8cd9",
     "binaryjs-client": "^1.0.0",
-    "cryptico-js": "^1.1.0",
-    "ejson": "^2.1.2"
+    "ejson": "^2.1.2",
+    "node-rsa": "^0.4.2"
   }
 }

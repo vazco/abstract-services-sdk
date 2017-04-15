@@ -1,10 +1,10 @@
 import {expect, should as shouldFN} from 'chai';
 import AbstractServicesSDK from '../lib/index';
 import AbstractService from '../lib/AbstractService';
-import cryptico from 'cryptico-js';
+import NodeRSA from 'node-rsa';
 const {describe, it} = global;
-const rsaKey = cryptico.generateRSAKey('rsaKey', 512);
-const pubKeyString = cryptico.publicKeyString(rsaKey);
+const rsaKey = new NodeRSA({b: 512});
+const pubKeyString = rsaKey.exportKey('pkcs8-public');
 const should = shouldFN();
 
 class TestService extends AbstractService {
@@ -38,11 +38,9 @@ describe('AbstractServicesSDK', () => {
     it('if we generate correct web token', () => {
         const token = testSDK.generateWebToken(DEFAULT_TOKEN_PARAMS);
         token.should.be.a('string');
-        const decryptedToken = cryptico.decrypt(token, rsaKey);
-        decryptedToken.should.be.an('object');
-        decryptedToken.plaintext.should.be.a('string');
-        expect(decryptedToken.status).to.be.equal('success');
-        const decrypted = JSON.parse(decryptedToken.plaintext);
+        const decryptedToken = rsaKey.decrypt(token, 'utf8');
+        decryptedToken.should.be.a('string');
+        const decrypted = JSON.parse(decryptedToken);
         Object.keys(DEFAULT_TOKEN_PARAMS).forEach(key => {
             expect(decrypted[key[0]], `token key [${key}]`).to.be.equal(DEFAULT_TOKEN_PARAMS[key]);
         });
@@ -58,10 +56,15 @@ describe('AbstractServicesSDK', () => {
     it('token cannot be readable with wrong private key', () => {
         const token = testSDK.generateWebToken(DEFAULT_TOKEN_PARAMS);
         token.should.be.a('string');
-        const decryptedToken = cryptico.decrypt(token, cryptico.generateRSAKey('badKey', 512));
-        decryptedToken.should.be.an('object');
-        expect(decryptedToken.status).to.be.equal('failure');
-        should.not.exist(decryptedToken.plaintext);
+        const badKey = new NodeRSA({b: 512});
+        let decryptedToken, error;
+        try {
+            decryptedToken = badKey.decrypt(token, 'utf8');
+        } catch (err) {
+            error = err;
+        }
+        expect(error).to.be.an('error');
+        expect(decryptedToken).to.not.be.an('string');
     });
 });
 

@@ -1,5 +1,5 @@
 import {randomString, shuffleProps} from './helpers';
-import cryptico from 'cryptico-js';
+import NodeRSA from 'node-rsa';
 import AbstractService from './AbstractService';
 import SdkError from './SdkError';
 
@@ -7,14 +7,22 @@ export class AbstractServicesSDK {
     constructor ({url, appId, publicKeyString = '', ServiceClasses = {}}) {
         this._appId = appId;
         this._url = url;
-        this._publicKeyString = publicKeyString;
+        if (publicKeyString) {
+            if (publicKeyString.indexOf('-----BEGIN PUBLIC KEY-----') === 0) {
+                const key = new NodeRSA();
+                key.importKey(publicKeyString, 'pkcs8-public');
+                this._publicKey = key;
+            } else {
+                throw new TypeError('Expected public key in pkcs8 format');
+            }
+        }
         this._serviceClasses = ServiceClasses;
         this._services = {};
         this._tokenGetters = {};
     }
 
     generateWebToken ({userId = '', groupId = '', sessionId = '', hash = '', ttl = 86400, adminKey = ''} = {}) {
-        if (!this._publicKeyString) {
+        if (!this._publicKey) {
             throw new Error('Generation of tokens is not available for current instance,' +
                 ' probably you should generate token on server side or publicKeyString was not provided');
         }
@@ -47,12 +55,7 @@ export class AbstractServicesSDK {
             credentials.g = groupId;
         }
 
-        const result = cryptico.encrypt(JSON.stringify(shuffleProps(credentials)), this._publicKeyString);
-        if (result.status !== 'success') {
-            throw new Error('Encryption failure');
-        }
-
-        return result.cipher;
+        return this._publicKey.encrypt(JSON.stringify(shuffleProps(credentials)), 'base64');
     }
 
     /**

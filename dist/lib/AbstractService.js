@@ -78,6 +78,7 @@ var AbstractService = exports.AbstractService = function (_Axios) {
         (0, _classCallCheck3.default)(this, AbstractService);
 
         var headers = {
+            'User-Agent': 'Services SDK',
             'x-app-id': appId
         };
 
