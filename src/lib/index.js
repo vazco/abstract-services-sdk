@@ -28,11 +28,11 @@ export class AbstractServicesSDK {
         }
         const credentials = {
             _: randomString(),
-            t: parseInt(Date.now()/1000)
+            t: parseInt(Date.now() / 1000)
         };
 
         if (ttl) {
-            credentials.e = parseInt(ttl)||0;
+            credentials.e = parseInt(ttl) || 0;
         }
 
         if (userId) {
@@ -86,7 +86,7 @@ export class AbstractServicesSDK {
     async getService (name) {
         if (!this._services[name]) {
             if (!this._serviceClasses[name]) {
-                throw new Error('Missing service under name: '+name);
+                throw new Error('Missing service under name: ' + name);
             }
             this._services[name] = new this._serviceClasses[name]({
                 serviceName: name,

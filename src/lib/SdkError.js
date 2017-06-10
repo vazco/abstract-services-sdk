@@ -2,7 +2,7 @@
 export class SdkError extends Error {
     constructor (code, message) {
         super(message);
-        this.name = 'Action unsuccessful ['+code+']';
+        this.name = 'Action unsuccessful [' + code + ']';
         this.code = code;
     }
 }

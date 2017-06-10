@@ -80,7 +80,7 @@ export class AbstractService extends Axios {
      * @returns {string} url
      */
     getBaseURL () {
-        return this['defaults'].baseURL||'';
+        return this['defaults'].baseURL || '';
     }
 
     /**
@@ -170,7 +170,7 @@ export class AbstractService extends Axios {
                 const streamSoc = client.createStream(Object.assign({
                     serviceName: this.getServiceName(),
                     appId: this.getAppId(),
-                    appToken: token,
+                    appToken: token
                 }, (config && config.data) || {}));
                 const _onData = streamSoc._onData.bind(streamSoc);
                 streamSoc._onData = data =>  {
