@@ -18,5 +18,5 @@ export function shuffleProps (obj) {
 }
 
 if (typeof Buffer === 'undefined' && typeof global !== 'undefined') {
- global.Buffer = require('buffer').Buffer;
+    global.Buffer = require('buffer').Buffer;
 }

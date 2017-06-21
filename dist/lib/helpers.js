@@ -36,3 +36,7 @@ function shuffleProps(obj) {
     });
     return result;
 }
+
+if (typeof Buffer === 'undefined' && typeof global !== 'undefined') {
+    global.Buffer = require('buffer').Buffer;
+}
