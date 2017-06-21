@@ -63,22 +63,23 @@ var _SdkError = require('./SdkError');
 
 var _SdkError2 = _interopRequireDefault(_SdkError);
 
+var _binary = require('../../vendors/binary');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var _ref = typeof window !== 'undefined' ? require('binaryjs-client') : require('binaryjs'),
-    BinaryClient = _ref.BinaryClient;
+// const {BinaryClient} = typeof window !== 'undefined' ? require('binaryjs-client') : require('binaryjs');
 
 var AbstractService = exports.AbstractService = function (_Axios) {
     (0, _inherits3.default)(AbstractService, _Axios);
 
-    function AbstractService(_ref2) {
-        var appId = _ref2.appId,
-            baseURL = _ref2.baseURL,
-            serviceName = _ref2.serviceName,
-            _ref2$authByCustomHea = _ref2.authByCustomHeader,
-            authByCustomHeader = _ref2$authByCustomHea === undefined ? false : _ref2$authByCustomHea,
-            _ref2$headers = _ref2.headers,
-            headers = _ref2$headers === undefined ? {} : _ref2$headers;
+    function AbstractService(_ref) {
+        var appId = _ref.appId,
+            baseURL = _ref.baseURL,
+            serviceName = _ref.serviceName,
+            _ref$authByCustomHead = _ref.authByCustomHeader,
+            authByCustomHeader = _ref$authByCustomHead === undefined ? false : _ref$authByCustomHead,
+            _ref$headers = _ref.headers,
+            headers = _ref$headers === undefined ? {} : _ref$headers;
         (0, _classCallCheck3.default)(this, AbstractService);
 
         var _this = (0, _possibleConstructorReturn3.default)(this, (AbstractService.__proto__ || (0, _getPrototypeOf2.default)(AbstractService)).call(this, { baseURL: baseURL.replace(/\/+$/, '') + '/' + appId + '/' + serviceName, url: '', headers: headers }));
@@ -109,7 +110,7 @@ var AbstractService = exports.AbstractService = function (_Axios) {
     }, {
         key: '_getToken',
         value: function () {
-            var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(config) {
+            var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(config) {
                 var token;
                 return _regenerator2.default.wrap(function _callee$(_context) {
                     while (1) {
@@ -153,7 +154,7 @@ var AbstractService = exports.AbstractService = function (_Axios) {
             }));
 
             function _getToken(_x) {
-                return _ref3.apply(this, arguments);
+                return _ref2.apply(this, arguments);
             }
 
             return _getToken;
@@ -161,7 +162,7 @@ var AbstractService = exports.AbstractService = function (_Axios) {
     }, {
         key: 'request',
         value: function () {
-            var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3(config) {
+            var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3(config) {
                 var _this2 = this;
 
                 var adapter, res;
@@ -173,7 +174,7 @@ var AbstractService = exports.AbstractService = function (_Axios) {
                                 adapter = config.adapter || this.defaults.adapter || _defaults2.default.adapter;
 
                                 config.adapter = function () {
-                                    var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(conf) {
+                                    var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(conf) {
                                         var token;
                                         return _regenerator2.default.wrap(function _callee2$(_context2) {
                                             while (1) {
@@ -210,7 +211,7 @@ var AbstractService = exports.AbstractService = function (_Axios) {
                                     }));
 
                                     return function (_x3) {
-                                        return _ref5.apply(this, arguments);
+                                        return _ref4.apply(this, arguments);
                                     };
                                 }();
 
@@ -239,7 +240,7 @@ var AbstractService = exports.AbstractService = function (_Axios) {
             }));
 
             function request(_x2) {
-                return _ref4.apply(this, arguments);
+                return _ref3.apply(this, arguments);
             }
 
             return request;
@@ -367,7 +368,7 @@ var AbstractService = exports.AbstractService = function (_Axios) {
     }, {
         key: 'sendStream',
         value: function () {
-            var _ref6 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4() {
+            var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4() {
                 var _this3 = this;
 
                 var onStream = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function () {};
@@ -383,7 +384,7 @@ var AbstractService = exports.AbstractService = function (_Axios) {
                             case 2:
                                 token = _context4.sent;
                                 return _context4.abrupt('return', new _promise2.default(function (resolve, reject) {
-                                    var client = new BinaryClient(_this3._socketURL);
+                                    var client = new _binary.BinaryClient(_this3._socketURL);
                                     var isResolved = false;
                                     var done = function done() {
                                         if (!isResolved) {
@@ -431,7 +432,7 @@ var AbstractService = exports.AbstractService = function (_Axios) {
             }));
 
             function sendStream() {
-                return _ref6.apply(this, arguments);
+                return _ref5.apply(this, arguments);
             }
 
             return sendStream;

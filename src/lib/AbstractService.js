@@ -2,8 +2,9 @@ import {Axios} from 'axios';
 import defaults from 'axios/lib/defaults';
 import EJSON from 'ejson';
 import SdkError from './SdkError';
+import {BinaryClient} from '../../vendors/binary';
 
-const {BinaryClient} = typeof window !== 'undefined' ? require('binaryjs-client') : require('binaryjs');
+// const {BinaryClient} = typeof window !== 'undefined' ? require('binaryjs-client') : require('binaryjs');
 
 export class AbstractService extends Axios {
     constructor ({appId, baseURL, serviceName, authByCustomHeader = false, headers = {}}) {
