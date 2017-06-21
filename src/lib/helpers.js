@@ -16,3 +16,7 @@ export function shuffleProps (obj) {
     keysOrder.forEach(key => result[key] = obj[key]);
     return result;
 }
+
+if (typeof Buffer === 'undefined' && typeof global !== 'undefined') {
+ global.Buffer = require('buffer').Buffer;
+}
