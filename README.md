@@ -1,4 +1,15 @@
-# Abstract Services SDK
+<h1 align="center">
+    <a href="https://github.com/vazco">vazco</a>/Abstract Services SDK
+</h1>
+
+&nbsp;
+
+<h3 align="center">
+  -- Abandonware. This package is deprecated! --
+</h3>
+
+&nbsp;
+
 This is abstract frame that helps with build SDK for your Universe Services Server.
 This package provides:
 - AbstractServicesSDK, which is a simple services manager with option to generate web tokens.
@@ -324,3 +335,8 @@ If the client emits an error, this event is emitted (errors from the underlying 
 * You can change them with adding and removing [presets](http://jamesknelson.com/the-six-things-you-need-to-know-about-babel-6/).
 * All the polyfills you use are taken from the local `babel-runtime` package. So, this package won't add any global polyfills and pollute the global namespace.
 
+### License
+
+<img src="https://vazco.eu/banner.png" align="right">
+
+**Like every package maintained by [Vazco](https://vazco.eu/), Abstract Services SDK is [MIT licensed](https://github.com/vazco/uniforms/blob/master/LICENSE).**
